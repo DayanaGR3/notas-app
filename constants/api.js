@@ -1,6 +1,6 @@
 const API_BASE = {
-  students: 'http://192.168.0.19:3001',
-  grades:   'http://192.168.0.19:3002',
+  students: 'https://notas-backend-26c2.onrender.com',
+  grades:   'https://grades-service.onrender.com',
 };
 
 export default API_BASE;
