@@ -1,20 +1,60 @@
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+
+import ConsultaScreen          from './screens/ConsultaScreen';
+import RegistroEstudianteScreen from './screens/RegistroEstudianteScreen';
+import RegistroNotaScreen       from './screens/RegistroNotaScreen';
+
+const Tab = createBottomTabNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+    <NavigationContainer>
       <StatusBar style="auto" />
-    </View>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ color, size }) => {
+            const icons = {
+              Consulta:        '🔍',
+              'Reg. Estud.':   '👤',
+              'Reg. Nota':     '📝',
+            };
+            return <Text style={{ fontSize: size - 4 }}>{icons[route.name]}</Text>;
+          },
+          tabBarActiveTintColor:   '#3498db',
+          tabBarInactiveTintColor: '#999',
+          tabBarStyle: {
+            backgroundColor: '#fff',
+            borderTopWidth: 1,
+            borderTopColor: '#eee',
+            height: 60,
+            paddingBottom: 8,
+          },
+          headerStyle:            { backgroundColor: '#2c3e50' },
+          headerTintColor:        '#fff',
+          headerTitleStyle:       { fontWeight: 'bold' },
+          tabBarLabelStyle:       { fontSize: 12, fontWeight: '600' },
+        })}
+      >
+        <Tab.Screen
+          name="Consulta"
+          component={ConsultaScreen}
+          options={{ title: 'Consulta de Notas' }}
+        />
+        <Tab.Screen
+          name="Reg. Estud."
+          component={RegistroEstudianteScreen}
+          options={{ title: 'Registro Estudiante' }}
+        />
+        <Tab.Screen
+          name="Reg. Nota"
+          component={RegistroNotaScreen}
+          options={{ title: 'Registro de Nota' }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
