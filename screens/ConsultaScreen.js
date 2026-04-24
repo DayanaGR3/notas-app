@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity,
-  StyleSheet, ActivityIndicator, ScrollView, Alert,
+  StyleSheet, ActivityIndicator, ScrollView,
 } from 'react-native';
 import axios from 'axios';
 import API_BASE from '../constants/api';
+import { showAlert } from '../utils/alert';
 
 export default function ConsultaScreen() {
-  const [cedula, setCedula]     = useState('');
-  const [nombre, setNombre]     = useState('');
+  const [cedula, setCedula]       = useState('');
+  const [nombre, setNombre]       = useState('');
   const [resultado, setResultado] = useState(null);
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading]     = useState(false);
 
   const consultar = async () => {
     if (!cedula.trim() && !nombre.trim()) {
-      Alert.alert('Error', 'Ingresa cédula o nombre para buscar');
+      showAlert('Error', 'Ingresa cédula o nombre para buscar');
       return;
     }
     setLoading(true);
@@ -26,7 +27,7 @@ export default function ConsultaScreen() {
       } else {
         const res = await axios.get(`${API_BASE.students}/estudiantes/buscar/${nombre.trim()}`);
         if (res.data.length === 0) {
-          Alert.alert('No encontrado', 'No existe un estudiante con ese nombre');
+          showAlert('No encontrado', 'No existe un estudiante con ese nombre');
           return;
         }
         const cedRes = await axios.get(`${API_BASE.grades}/notas/${res.data[0].cedula}`);
@@ -34,7 +35,7 @@ export default function ConsultaScreen() {
       }
     } catch (err) {
       const msg = err.response?.data?.error || 'Error al consultar';
-      Alert.alert('Error', msg);
+      showAlert('Error', msg);
     } finally {
       setLoading(false);
     }
@@ -42,34 +43,41 @@ export default function ConsultaScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.titulo}>Consulta de Notas</Text>
+      <View style={styles.card}>
+        <Text style={styles.titulo}>🌸 Consulta de Notas</Text>
+        <Text style={styles.subtitulo}>Busca por cédula o nombre</Text>
 
-      <Text style={styles.label}>Cédula</Text>
-      <TextInput
-        style={styles.input}
-        value={cedula}
-        onChangeText={setCedula}
-        keyboardType="numeric"
-        placeholder="Ej: 1001"
-      />
+        <Text style={styles.label}>Cédula</Text>
+        <TextInput
+          style={styles.input}
+          value={cedula}
+          onChangeText={setCedula}
+          keyboardType="numeric"
+          placeholder="Ej: 1001"
+          placeholderTextColor="#D18EA8"
+        />
 
-      <Text style={styles.label}>Nombre</Text>
-      <TextInput
-        style={styles.input}
-        value={nombre}
-        onChangeText={setNombre}
-        placeholder="Ej: Juan Perez"
-      />
+        <Text style={styles.label}>Nombre</Text>
+        <TextInput
+          style={styles.input}
+          value={nombre}
+          onChangeText={setNombre}
+          placeholder="Ej: Juan Perez"
+          placeholderTextColor="#D18EA8"
+        />
 
-      <TouchableOpacity style={styles.btnConsultar} onPress={consultar} disabled={loading}>
-        {loading
-          ? <ActivityIndicator color="#fff" />
-          : <Text style={styles.btnText}>Consultar</Text>}
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.btnConsultar} onPress={consultar} disabled={loading}>
+          {loading
+            ? <ActivityIndicator color="#fff" />
+            : <Text style={styles.btnText}>Consultar</Text>}
+        </TouchableOpacity>
+      </View>
 
       {resultado && (
         <View style={styles.resultadoCard}>
-          <Text style={styles.materiaLabel}>Materia: {resultado.materia}</Text>
+          <Text style={styles.nombreResult}>{resultado.nombre}</Text>
+          <Text style={styles.materiaChip}>{resultado.materia}</Text>
+
           <View style={styles.filaNota}>
             <Text style={styles.notaLabel}>Nota 1</Text>
             <Text style={styles.notaValor}>{resultado.nota1 ?? '—'}</Text>
@@ -86,9 +94,10 @@ export default function ConsultaScreen() {
             <Text style={styles.notaLabel}>Nota 4</Text>
             <Text style={styles.notaValor}>{resultado.nota4 ?? '—'}</Text>
           </View>
-          <View style={[styles.filaNota, styles.filaDef]}>
-            <Text style={[styles.notaLabel, styles.defLabel]}>Definitiva</Text>
-            <Text style={[styles.notaValor, styles.defValor]}>{resultado.definitiva ?? '—'}</Text>
+
+          <View style={styles.defBox}>
+            <Text style={styles.defLabel}>Definitiva</Text>
+            <Text style={styles.defValor}>{resultado.definitiva ?? '—'}</Text>
           </View>
         </View>
       )}
@@ -99,86 +108,129 @@ export default function ConsultaScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFF5F7',
     flexGrow: 1,
   },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#F8BBD0',
+    shadowColor: '#E91E63',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+    marginBottom: 18,
+  },
   titulo: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 20,
+    color: '#880E4F',
     textAlign: 'center',
   },
+  subtitulo: {
+    fontSize: 13,
+    color: '#AD1457',
+    textAlign: 'center',
+    marginBottom: 18,
+    fontStyle: 'italic',
+  },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#555',
-    marginBottom: 4,
+    color: '#880E4F',
+    marginBottom: 5,
   },
   input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 10,
+    backgroundColor: '#FFF5F7',
+    borderWidth: 1.5,
+    borderColor: '#F8BBD0',
+    borderRadius: 12,
+    padding: 12,
     marginBottom: 14,
     fontSize: 15,
+    color: '#4A148C',
   },
   btnConsultar: {
-    backgroundColor: '#3498db',
-    padding: 13,
-    borderRadius: 8,
+    backgroundColor: '#E91E63',
+    padding: 14,
+    borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 20,
+    marginTop: 4,
+    shadowColor: '#E91E63',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
   },
   btnText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+    letterSpacing: 0.5,
   },
   resultadoCard: {
     backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 16,
+    borderRadius: 18,
+    padding: 20,
     borderWidth: 1,
-    borderColor: '#ddd',
-    elevation: 2,
+    borderColor: '#F8BBD0',
+    elevation: 3,
   },
-  materiaLabel: {
-    fontSize: 16,
+  nombreResult: {
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 12,
+    color: '#880E4F',
     textAlign: 'center',
+  },
+  materiaChip: {
+    backgroundColor: '#F06292',
+    color: '#fff',
+    alignSelf: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 5,
+    borderRadius: 20,
+    fontWeight: 'bold',
+    marginVertical: 12,
+    fontSize: 13,
+    overflow: 'hidden',
   },
   filaNota: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  filaDef: {
-    borderBottomWidth: 0,
-    marginTop: 4,
+    borderBottomColor: '#FCE4EC',
   },
   notaLabel: {
     fontSize: 15,
-    color: '#555',
+    color: '#6A1B4A',
   },
   notaValor: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#2c3e50',
+    fontWeight: '700',
+    color: '#4A148C',
+  },
+  defBox: {
+    backgroundColor: '#FCE4EC',
+    borderRadius: 14,
+    padding: 14,
+    alignItems: 'center',
+    marginTop: 14,
+    borderWidth: 1.5,
+    borderColor: '#E91E63',
   },
   defLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontSize: 13,
+    color: '#880E4F',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   defValor: {
-    fontSize: 16,
-    color: '#27ae60',
+    fontSize: 26,
+    color: '#C2185B',
     fontWeight: 'bold',
+    marginTop: 2,
   },
 });

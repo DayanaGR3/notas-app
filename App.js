@@ -24,16 +24,17 @@ export default function App() {
             };
             return <Text style={{ fontSize: size - 4 }}>{icons[route.name]}</Text>;
           },
-          tabBarActiveTintColor:   '#3498db',
-          tabBarInactiveTintColor: '#999',
+          tabBarActiveTintColor:   '#E91E63',
+          tabBarInactiveTintColor: '#B0BEC5',
           tabBarStyle: {
-            backgroundColor: '#fff',
+            backgroundColor: '#FFF0F3',
             borderTopWidth: 1,
-            borderTopColor: '#eee',
-            height: 60,
+            borderTopColor: '#F8BBD0',
+            height: 62,
             paddingBottom: 8,
+            paddingTop: 4,
           },
-          headerStyle:            { backgroundColor: '#2c3e50' },
+          headerStyle:            { backgroundColor: '#C2185B' },
           headerTintColor:        '#fff',
           headerTitleStyle:       { fontWeight: 'bold' },
           tabBarLabelStyle:       { fontSize: 12, fontWeight: '600' },
